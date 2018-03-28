@@ -1,0 +1,2 @@
+http://apprendre-python.com/page-tkinter-interface-graphique-python-tutoriel
+https://stackoverflow.com/questions/43708681/pil-png-image-as-watermark-for-a-jpg-image

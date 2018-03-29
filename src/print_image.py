@@ -53,4 +53,5 @@ def test():
 
 app = Appli()
 app.display_image()
+app.openfile()
 app.run()

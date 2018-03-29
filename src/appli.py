@@ -1,6 +1,8 @@
 from tkinter import *
 from PIL import Image, ImageTk
 
+from tkinter import filedialog
+
 class Appli:
 
     def __init__(self):
@@ -21,3 +23,6 @@ class Appli:
 
     def run(self):
         self.fenetre.mainloop()
+
+    def choose_dir(self):
+        self.directory = filedialog.askdirectory()

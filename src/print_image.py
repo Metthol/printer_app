@@ -7,9 +7,12 @@ def apply_watermark():
     width, height = photo.size
     wwidth, wheight = watermark.size
 
-    size = width * 0.1, width * 0.1
+    size = width * 0.1,((width * 0.1 * wheight) / wwidth)
+    print(str(wwidth)+" " +str(wheight) + " " + str(size))
+    
 
-    watermark.thumbnail(size
+    watermark.thumbnail(size, Image.ANTIALIAS)
+    wwidth, wheight = watermark.size
 
     x = width - wwidth - 25
     y = height - wheight - 25

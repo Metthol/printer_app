@@ -1,7 +1,8 @@
 from tkinter import *
-from PIL import Image
+from PIL import Image, ImageTk
+from appli import Appli
 
-def apply_watermark():
+def apply_watermark_ephemere():
     photo = Image.open('test.jpg')
     watermark = Image.open('watermark.png')
     width, height = photo.size
@@ -19,21 +20,37 @@ def apply_watermark():
     photo.paste(watermark, (x, y), watermark)
     photo.save('out.jpg', 'JPEG', quality=100)
 
+def display_image():
+    canvas2 = Canvas(fenetre, width=200, height=200, bg='red')
+    
+    canvas2.create_image(10, 10, anchor=NW, image=img_ress)
+    canvas2.pack()
+    return canvas2
 
-fenetre = Tk()
+def test():
+    
+    fenetre = Tk()
 
-label = Label(fenetre, text="Hello World")
-label.pack()
 
-bouton=Button(fenetre, text="Fermer", command=fenetre.quit)
-bouton.pack()
 
-canvas = Canvas(fenetre, width=150, height=120, background = 'yellow')
-ligne1 = canvas.create_line(75, 0, 75, 120)
-ligne2 = canvas.create_line(0, 60, 150, 60)
-txt = canvas.create_text(75, 60, text="Cible", font="Arial 16 italic", fill="red")
-canvas.pack()
+    imgg = Image.open('out.jpg')
+    img = ImageTk.PhotoImage(imgg)
 
-apply_watermark()
+    w, h = imgg.size
+    size = 150, h * 150 / w
+    imgg.thumbnail(size, Image.ANTIALIAS)
 
-fenetre.mainloop()
+    img_ress = ImageTk.PhotoImage(imgg)
+
+
+    canvas = Canvas(fenetre, width=200, height=200, bg='black')
+    canvas.create_image(10, 10, anchor=NW, image=img)
+    canvas.pack()
+
+    canvas2 = display_image()
+
+    fenetre.mainloop()
+
+app = Appli()
+app.display_image()
+app.run()

@@ -1,2 +1,3 @@
 http://apprendre-python.com/page-tkinter-interface-graphique-python-tutoriel
 https://stackoverflow.com/questions/43708681/pil-png-image-as-watermark-for-a-jpg-image
+https://stackoverflow.com/questions/273946/how-do-i-resize-an-image-using-pil-and-maintain-its-aspect-ratio

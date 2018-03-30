@@ -52,6 +52,6 @@ def test():
     fenetre.mainloop()
 
 app = Appli()
-app.display_image()
-app.openfile()
+app.choose_dir()
+app.make_grid()
 app.run()

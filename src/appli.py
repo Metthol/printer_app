@@ -39,6 +39,9 @@ class Appli:
     def catalogue(self):
         self.catalogue = Frame(self.root, height=250, width=200, bg='red')
         self.catalogue.grid(row=0, column=2)
+
+    def add_picture(self, name, qte):
+        print(name + " " + str(qte))
         
     def run(self):
         self.root.mainloop()
@@ -71,5 +74,5 @@ class Appli:
                     print(path)
 
     def display_image(self, image, row, column):
-        self.photos.append(Photo(self.fr, image, row, column))
+        self.photos.append(Photo(self.fr, image, row, column, self.di, self.add_picture))
         self.photos[-1].grid(column = column, row = row)

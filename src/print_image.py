@@ -51,7 +51,7 @@ def test():
 
     fenetre.mainloop()
 
-def test_scroll(): 
+def test_scroll():
     root = Tk()
     root.minsize(300, 300)
     vsb = Scrollbar(root, orient=VERTICAL)

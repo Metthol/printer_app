@@ -4,8 +4,11 @@ import os
 
 class Photo(Frame):
     
-    def __init__(self, parent, image, r, c):
+    def __init__(self, parent, image, r, c, ind, callback):
         Frame.__init__(self)
+
+        self.callback = callback
+        self.ind = ind
         
         self.image = image
         self.parent = parent
@@ -26,6 +29,7 @@ class Photo(Frame):
         self.canvas.grid(column=0, row = 0, pady=(0, 5), columnspan=2)
 
         self.load_signs()
+        self.bind_events()
 
     def load_signs(self):
         size = 20, 20
@@ -46,3 +50,13 @@ class Photo(Frame):
         self.cplus = Canvas(self.frame, width=w, height=h, bg='white', highlightthickness=0)
         self.cplus.create_image(0,0, anchor=NW, image=self.plus)
         self.cplus.grid(column=0,row=1, pady=(0, 5))
+
+    def bind_events(self):
+        self.cplus.bind("<Button-1>", self.add_picture)
+        self.cminus.bind("<Button-1>", self.del_picture)
+
+    def del_picture(self, event):
+        self.callback(str(self.ind), -1)
+
+    def add_picture(self, event):
+        self.callback(str(self.ind), 1)

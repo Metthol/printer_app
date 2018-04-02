@@ -5,7 +5,7 @@ import os
 import threading
 
 from photo import Photo
-from monitorFiles import MonitorFiles
+from catalogue import Catalog
 
 class Appli:
 
@@ -37,12 +37,13 @@ class Appli:
         self.catalogue()
 
     def catalogue(self):
-        self.catalogue = Frame(self.root, height=250, width=200, bg='red')
-        self.catalogue.grid(row=0, column=2)
+        self.catalogue = Catalog(self.root)
 
     def add_picture(self, name, qte):
         print(name + " " + str(qte))
-        
+        self.catalogue.add_picture(self.images[int(name)])
+        self.fr.update_idletasks()
+
     def run(self):
         self.root.mainloop()
 

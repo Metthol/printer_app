@@ -31,6 +31,9 @@ class Photo(Frame):
         self.load_signs()
         self.bind_events()
 
+    def set_callback(self, callback):
+        self.callback = callback
+
     def load_signs(self):
         size = 20, 20
         w, h = 20, 20

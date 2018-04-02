@@ -3,10 +3,13 @@ from PIL import Image, ImageTk
 from tkinter import filedialog
 import os
 
+from photo import Photo
+
 class Appli:
 
     images = []
     thumbnails = []
+    photos = []
     path_images = []
 
     def __init__(self):
@@ -14,8 +17,8 @@ class Appli:
         
         self.fenetre.title('Imprimez vos photos !')
         self.fenetre.geometry('500x500') # Size 200, 200
-        self.frame = Frame(self.fenetre, height=500, width=500)
-        self.frame.pack()
+        self.frame = Frame(self.fenetre, height=500, width=500, bg='blue')
+        self.frame.grid(row = 0, column = 0, padx=(100,0))
 
     def run(self):
         self.fenetre.mainloop()
@@ -39,22 +42,27 @@ class Appli:
             self.display_image(img, int(i / 3), int(i % 3))
             print(str(int(i/3)) + " " + str(int(i%3)))
             i = i + 1
+        print(self.frame.grid_info())
 
     def display_image(self, image, row, column):
-        self.thumbnails.append(image)
-        w, h = self.thumbnails[-1].size
-        size = 150, h * 150 / w
-        self.thumbnails[-1].thumbnail(size, Image.ANTIALIAS)
+        self.photos.append(Photo(self.frame, image, row, column))
+        self.photos[-1].grid(column = column, row = row)
 
-        self.thumbnails[-1] = ImageTk.PhotoImage(self.thumbnails[-1])
-
-        color = 'red'
-        if (row + column) % 2 == 0:
-            color = 'blue'
-            
-        canvas = Canvas(self.frame, width=200, height=200, bg=color)
         
-        canvas.create_image(10, 10, anchor=NW, image=self.thumbnails[-1])
-        canvas.grid(row = row, column = column)
-
-    
+##        self.thumbnails.append(image)
+##        w, h = self.thumbnails[-1].size
+##        size = 150, h * 150 / w
+##        self.thumbnails[-1].thumbnail(size, Image.ANTIALIAS)
+##
+##        self.thumbnails[-1] = ImageTk.PhotoImage(self.thumbnails[-1])
+##
+##        color = 'red'
+##        if (row + column) % 2 == 0:
+##            color = 'blue'
+##            
+##        canvas = Canvas(self.frame, width=200, height=200, bg=color)
+##        
+##        canvas.create_image(10, 10, anchor=NW, image=self.thumbnails[-1])
+##        canvas.grid(row = row, column = column)
+##
+            

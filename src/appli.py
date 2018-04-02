@@ -17,15 +17,22 @@ class Appli:
 
     def __init__(self):
         self.root = Tk()
+        self.root.configure(background='white')
         self.root.title('Imprimez vos photos !')
+        
         self.vsb = Scrollbar(self.root, orient=VERTICAL)
         self.vsb.grid(row=0, column=1, sticky=N+S)
+        
         self.c = Canvas(self.root,yscrollcommand=self.vsb.set)
         self.c.grid(row=0, column=0, sticky="news")
+        self.c.configure(background='white')
+
         self.vsb.config(command=self.c.yview)
+
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.fr = Frame(self.c)
+
 
         self.catalogue()
 
@@ -47,7 +54,7 @@ class Appli:
             print(str(int(self.di/3)) + " " + str(int(self.di%3)))
             self.di = self.di + 1
                     
-        self.c.create_window(0, 0,  window=self.fr)
+        self.c.create_window(0, 0, window=self.fr)
         self.fr.update_idletasks()
         self.c.config(scrollregion=self.c.bbox("all"))
 

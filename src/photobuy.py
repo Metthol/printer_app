@@ -9,4 +9,13 @@ class PhotoBuy(Photo):
 
     def __init__(self, parent, image, r, c, ind, callback):
         Photo.__init__(self, parent, image, r, c, ind, callback)
-        
+        self.qte = 1
+
+    def change_qty(self, name, qte):
+        self.qte = self.qte + int(qte)
+        print(str(self.ind) + "--" + str(self.qte))
+        return self.qte
+
+    def remove(self):
+        self.frame.grid_forget()
+        self.frame.destroy()

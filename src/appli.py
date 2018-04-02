@@ -37,13 +37,34 @@ class Appli:
         self.catalogue()
 
     def catalogue(self):
-        self.catalogue = Catalog(self.root)
+        self.cvsb = Scrollbar(self.root, orient = VERTICAL)
+        self.cvsb.grid(row=0, column=3, sticky=N+S)
+
+        self.cc = Canvas(self.root, yscrollcommand=self.cvsb.set)
+        self.cc.grid(row=0, column=2, sticky="news")
+        self.cc.configure(background='white')
+
+        self.cvsb.config(command=self.cc.yview)
+
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        
+        self.cfr = Frame(self.cc)
+        self.cc.configure(bg='red')
+
+        self.catalogue = Catalog(self.cfr)
+
+        
 
     def add_picture(self, name, qte):
         print(name + " " + str(qte))
         self.catalogue.add_picture(self.images[int(name)])
         self.fr.update_idletasks()
 
+        self.cc.create_window(0, 0, window=self.cfr)
+        self.cfr.update_idletasks()
+        self.cc.config(scrollregion=self.cc.bbox("all"))
+        
     def run(self):
         self.root.mainloop()
 

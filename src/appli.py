@@ -13,19 +13,25 @@ class Appli:
     path_images = []
 
     def __init__(self):
-        self.fenetre = Tk()
+        self.root = Tk()
+        self.root.title('Imprimez vos photos !')
+        self.root.minsize(500, 500)
+        self.root.geometry('500x500')
+        self.vsb = Scrollbar(self.root, orient=VERTICAL)
+        self.vsb.grid(row=0, column=1, sticky=N+S)
+        self.c = Canvas(self.root,yscrollcommand=self.vsb.set)
+        self.c.grid(row=0, column=0, sticky="news")
+        self.vsb.config(command=self.c.yview)
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        self.fr = Frame(self.c)
         
-        self.fenetre.title('Imprimez vos photos !')
-        self.fenetre.geometry('500x500') # Size 200, 200
-        self.frame = Frame(self.fenetre, height=500, width=500, bg='blue')
-        self.frame.grid(row = 0, column = 0, padx=(100,0))
-
     def run(self):
-        self.fenetre.mainloop()
+        self.root.mainloop()
 
     def load_images(self):
         for filename in os.listdir(self.directory):
-            if filename.endswith('.jpg'):
+            if filename.endswith('.JPG'):
                 path = self.directory + "/" + filename
                 self.images.append(Image.open(path))
                 self.path_images.append(path)
@@ -42,27 +48,12 @@ class Appli:
             self.display_image(img, int(i / 3), int(i % 3))
             print(str(int(i/3)) + " " + str(int(i%3)))
             i = i + 1
-        print(self.frame.grid_info())
+            
+        print(self.fr.grid_info())
+        self.c.create_window(0, 0,  window=self.fr)
+        self.fr.update_idletasks()
+        self.c.config(scrollregion=self.c.bbox("all"))
 
     def display_image(self, image, row, column):
-        self.photos.append(Photo(self.frame, image, row, column))
+        self.photos.append(Photo(self.fr, image, row, column))
         self.photos[-1].grid(column = column, row = row)
-
-        
-##        self.thumbnails.append(image)
-##        w, h = self.thumbnails[-1].size
-##        size = 150, h * 150 / w
-##        self.thumbnails[-1].thumbnail(size, Image.ANTIALIAS)
-##
-##        self.thumbnails[-1] = ImageTk.PhotoImage(self.thumbnails[-1])
-##
-##        color = 'red'
-##        if (row + column) % 2 == 0:
-##            color = 'blue'
-##            
-##        canvas = Canvas(self.frame, width=200, height=200, bg=color)
-##        
-##        canvas.create_image(10, 10, anchor=NW, image=self.thumbnails[-1])
-##        canvas.grid(row = row, column = column)
-##
-            

@@ -13,6 +13,7 @@ class Appli:
     thumbnails = []
     photos = []
     path_images = []
+    di = 0
 
     def __init__(self):
         self.root = Tk()
@@ -40,16 +41,18 @@ class Appli:
         print(self.directory)
 
     def make_grid(self):
-        i = 0
         self.update_images()
-        for img in self.images:
-            self.display_image(img, int(i / 3), int(i % 3))
-            print(str(int(i/3)) + " " + str(int(i%3)))
-            i = i + 1
+        for img in self.images[self.di:]:
+            self.display_image(img, int(self.di / 3), int(self.di % 3))
+            print(str(int(self.di/3)) + " " + str(int(self.di%3)))
+            self.di = self.di + 1
                     
         self.c.create_window(0, 0,  window=self.fr)
         self.fr.update_idletasks()
         self.c.config(scrollregion=self.c.bbox("all"))
+
+        self.root.after(2000, self.make_grid)
+
 
     def update_images(self):
         for f in os.listdir(self.directory):
@@ -59,7 +62,6 @@ class Appli:
                     self.images.append(Image.open(path))
                     self.path_images.append(path)
                     print(path)
-        self.root.after(2000, self.update_images)
 
     def display_image(self, image, row, column):
         self.photos.append(Photo(self.fr, image, row, column))

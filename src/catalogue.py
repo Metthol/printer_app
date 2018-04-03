@@ -12,19 +12,23 @@ class Catalog():
     def __init__(self, parent):
         self.parent = parent
 
-    def add_picture(self, name, img):        
-        self.img.append(PhotoBuy(self.parent, img, self.nb, 0, self.nb, self.print_ind))
-        self.names.append(int(name))
-        self.nb = self.nb + 1
-        self.ind = self.ind + 1
+    def add_picture(self, name, img, qte):
+        if int(name) in self.names:
+            index = self.names.index(int(name))
+            self.print_ind(name, qte)
+        else:
+            if int(qte) == 1:
+                self.img.append(PhotoBuy(self.parent, img, self.nb, 0, int(name), self.print_ind))
+                self.names.append(int(name))
+                self.nb = self.nb + 1
 
     def print_ind(self, name, qte):
         print("print from catalog : " + str(name) + " " + str(qte))
         print("print from photo : ")
-        new_qte = self.img[int(name)].change_qty(name, qte)
+        index = self.names.index(int(name))
+        new_qte = self.img[index].change_qty(name, qte)
 
         if new_qte==0:
-            #self.img[int(name)].remove()
-            self.img[int(name)] = 0
-            self.nb = self.nb - 1
+            self.img.pop(index).remove()
+            self.names.pop(index)
             print("remove element " + str(self.nb))

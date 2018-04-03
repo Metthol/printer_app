@@ -54,11 +54,9 @@ class Appli:
 
         self.catalogue = Catalog(self.cfr)
 
-        
-
     def add_picture(self, name, qte):
         print(name + " " + str(qte))
-        self.catalogue.add_picture(self.images[int(name)])
+        self.catalogue.add_picture(int(name), self.images[int(name)])
         self.fr.update_idletasks()
 
         self.cc.create_window(0, 0, window=self.cfr)

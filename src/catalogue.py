@@ -32,3 +32,36 @@ class Catalog():
             self.img.pop(index).remove()
             self.names.pop(index)
             print("remove element " + str(self.nb))
+
+    def print(self):
+        nb_pic = 0
+        w, h = self.img[0].image.size
+        offset = h
+        for i in self.img:
+            nb_pic = nb_pic + i.qte
+
+        l = h*nb_pic
+        print("size new pic : " + str(w) + "-" + str(l))
+
+        result = Image.new("RGB", (w, l))
+
+        pos = 0
+        for i in self.img:
+            for j in range(0, i.qte):
+                w, h = i.image.size
+                print("avant : " + str(w) + " " + str(h))
+                if w < h:
+                    img = i.image.rotate(90, expand=True)
+                    result.paste(img, (0,pos))
+                    w, h = i.image.size
+                else:
+                    result.paste(i.image, (0,pos))
+                pos = pos + offset
+                print("apres : " + str(w) + " " + str(h))
+                
+        result.save('out.jpg', 'JPEG', quality=100)
+
+
+
+        
+

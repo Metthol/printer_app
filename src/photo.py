@@ -18,7 +18,7 @@ class Photo(Frame):
         w, h = self.image.size
         sw, sh = 150, h * 150 / w
         size = sw, sh
-        self.thumbnail = image
+        self.thumbnail = image.copy()
         self.thumbnail.thumbnail(size, Image.ANTIALIAS)
         self.thumbnail = ImageTk.PhotoImage(self.thumbnail)
 

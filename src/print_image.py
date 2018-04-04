@@ -70,7 +70,22 @@ def test_scroll():
     c.config(scrollregion=c.bbox("all"))
     root.mainloop()
 
-app = Appli()
-app.choose_dir()
-app.make_grid()
-app.run()
+def test_print_app():
+    photo = Image.open('../images/raid.JPG')
+    photo = photo.rotate(90, expand=True)
+    w,h = photo.size
+    print(str(w) + " " + str(h))
+    result = Image.new("RGB", (w, h*2))
+    result.paste(photo, (0,0))
+    result.paste(photo, (0, h))
+    result.save('out.jpg', 'JPEG', quality=100)
+
+
+def runapp():
+    app = Appli()
+    app.choose_dir()
+    app.make_grid()
+    app.run()
+
+runapp()
+#test_print_app()

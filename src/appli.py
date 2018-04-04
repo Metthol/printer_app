@@ -32,8 +32,7 @@ class Appli:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.fr = Frame(self.c)
-
-
+        
         self.catalogue()
 
     def catalogue(self):
@@ -50,9 +49,12 @@ class Appli:
         self.root.grid_columnconfigure(0, weight=1)
         
         self.cfr = Frame(self.cc)
-        self.cc.configure(bg='red')
 
         self.catalogue = Catalog(self.cfr)
+
+        self.print_button = Button(self.cc, text ="Imprimer", command=self.catalogue.print)
+        self.print_button.grid(row=0, column=0, padx=(150,150))
+        
 
     def add_picture(self, name, qte):
         print(name + " " + str(qte))
@@ -86,7 +88,7 @@ class Appli:
 
     def update_images(self):
         for f in os.listdir(self.directory):
-            if f.endswith('.JPG'):
+            if f.endswith('.JPG') or f.endswith('.jpg'):
                 path = self.directory + "/" + f
                 if not path in self.path_images:
                     self.images.append(Image.open(path))
@@ -95,4 +97,3 @@ class Appli:
 
     def display_image(self, image, row, column):
         self.photos.append(Photo(self.fr, image, row, column, self.di, self.add_picture))
-        self.photos[-1].grid(column = column, row = row)

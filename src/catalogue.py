@@ -9,8 +9,9 @@ class Catalog():
     nb = 0
     ind = 0
    
-    def __init__(self, parent):
+    def __init__(self, parent, root):
         self.parent = parent
+        self.root = root
 
     def add_picture(self, name, img, qte):
         if int(name) in self.names:
@@ -23,7 +24,7 @@ class Catalog():
                 self.nb = self.nb + 1
 
     def print_ind(self, name, qte):
-        print("print from catalog : " + str(name) + " " + str(qte))
+        print("print from catalogAAA : " + str(name) + " " + str(qte))
         print("print from photo : ")
         index = self.names.index(int(name))
         new_qte = self.img[index].change_qty(name, qte)
@@ -34,6 +35,10 @@ class Catalog():
             print("remove element " + str(self.nb))
 
     def print(self):
+
+        self.print_window = Toplevel(self.root)
+        return
+        
         nb_pic = 0
         w, h = self.img[0].image.size
         offset = h

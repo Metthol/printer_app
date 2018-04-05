@@ -27,3 +27,8 @@ class PhotoBuy(Photo):
     def remove(self):
        # self.frame.grid_forget()
         self.frame.destroy()
+
+    def bind_events(self):
+        self.cplus.bind("<Button-1>", self.add_picture)
+        self.cminus.bind("<Button-1>", self.del_picture)
+        

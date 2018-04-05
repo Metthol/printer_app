@@ -57,6 +57,7 @@ class Photo(Frame):
     def bind_events(self):
         self.cplus.bind("<Button-1>", self.add_picture)
         self.cminus.bind("<Button-1>", self.del_picture)
+        self.canvas.bind("<Button-1>", self.add_picture)
 
     def del_picture(self, event):
         self.callback(str(self.ind), -1)

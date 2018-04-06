@@ -8,10 +8,25 @@ class Catalog():
     names = []
     nb = 0
     ind = 0
+
+    watermarks = []
+    thumb_watermarks = []
    
-    def __init__(self, parent, root):
+    def __init__(self, parent, root, dir_watermark):
         self.parent = parent
         self.root = root
+        self.dir_w = dir_watermark
+
+        for f in self.dir_w:
+            self.watermarks.append(Image.open(self.dir_w + "/" + f))
+            thumb_w = self.watermarks[-1].copy()
+
+            w, h = self.watermarks[-1].size
+            sw, sh = 150, h * 150 / w
+            size = sw, sh
+            
+            thumb_w.thumbnail(size, Image.ANTIALIAS)
+            self.thumb_watermarks.append(thumb_w.copy())
 
     def add_picture(self, name, img, qte):
         if int(name) in self.names:
@@ -37,6 +52,10 @@ class Catalog():
     def print(self):
 
         self.print_window = Toplevel(self.root)
+
+        for i in self.thumb_watermark:
+            
+        
         return
         
         nb_pic = 0

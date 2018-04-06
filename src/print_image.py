@@ -83,7 +83,6 @@ def test_print_app():
 
 def runapp():
     app = Appli()
-    app.choose_dir()
     app.make_grid()
     app.run()
 

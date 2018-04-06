@@ -32,6 +32,13 @@ class Appli:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.fr = Frame(self.c)
+
+        self.dir_watermark = filedialog.askdirectory()
+        self.directory = filedialog.askdirectory()
+        print("photos : " + self.directory)
+        print("watermark : " + self.dir_watermark)
+
+
         
         self.catalogue()
 
@@ -50,7 +57,7 @@ class Appli:
         
         self.cfr = Frame(self.cc)
 
-        self.catalogue = Catalog(self.cfr, self.root)
+        self.catalogue = Catalog(self.cfr, self.root, "test")
 
         self.print_button = Button(self.cc, text ="Imprimer", command=self.catalogue.print)
         self.print_button.grid(row=0, column=0, padx=(150,150))
@@ -67,10 +74,6 @@ class Appli:
         
     def run(self):
         self.root.mainloop()
-
-    def choose_dir(self):
-        self.directory = filedialog.askdirectory()
-        print(self.directory)
 
     def make_grid(self):
         self.update_images()

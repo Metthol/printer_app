@@ -20,12 +20,28 @@ class Catalog():
         self.print_window = Toplevel(self.root)
         self.print_window.withdraw()
 
+        self.check_window = Toplevel(self.root)
+        self.check_window.withdraw()
+
+        self.build_check_window()
+
         i = 0
         for f in os.listdir(self.dir_w):
             nom = f.split(".")[0]
             self.watermarks.append(Watermark(self.print_window, self, self.dir_w + "/" + f, nom, 0, i, i))
             i = i + 1
 
+    def build_check_window(self):
+        self.check_label = Label(self.check_window, text="Valider votre choix ?", bg = 'white')
+        self.check_label.config(font=("Courrier", 44))
+        self.check_label.grid(row=0,column=0, columnspan=2)
+
+        self.ok_button = Button(self.check_window, text="Oui", command=self.print_commande)
+        self.ok_button.grid(row=1, column=0)
+        
+        self.non_button = Button(self.check_window, text="Non", command=self.change_commande)
+        self.non_button.grid(row=1, column=1)
+    
     def add_picture(self, name, img, qte):
         if int(name) in self.names:
             index = self.names.index(int(name))
@@ -51,10 +67,27 @@ class Catalog():
         self.print_window.update()
         self.print_window.deiconify()
         
-    def print(self, index):
-        print("ON IMPRIME AVEC " + self.watermarks[index].nom)
+    def validation(self, index):
+        print("ON VERIFIE AVEC " + self.watermarks[index].nom)
+        self.chosen_watermark = index
         self.print_window.withdraw()
+
+        self.check_window.update()
+        self.check_window.deiconify()
+
+        
+
+    def change_commande(self):
+        print("non")
+        self.check_window.withdraw()
+
+        
+    def print_commande(self):
+        print("oui")
+        self.check_window.withdraw()
+        
         return
+
         nb_pic = 0
         w, h = self.img[0].image.size
         offset = h

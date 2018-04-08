@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import Image, ImageTk
+from tkinter import font
 import os
 
 class Watermark():
@@ -20,10 +21,12 @@ class Watermark():
         size = sw, sh
 
         self.frame = Frame(self.parent, height=250, width=200, bg='white')
-        self.frame.grid(row=r, column=c, pady=(0,20))
+        self.frame.grid(row=int(i/2), column=int(i%2), pady=(0,20))
 
-        self.button = Button(self.frame, text=nom, command=self.print)
+        self.font = font.Font(family='Arial', size=36, weight=font.BOLD)
+
+        self.button = Button(self.frame, text=nom, command=self.print, font=self.font)
         self.button.grid(row=0, column=0)
 
     def print(self):
-        self.catalogue.print(self.index)
+        self.catalogue.validation(self.index)

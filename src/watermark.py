@@ -4,18 +4,26 @@ import os
 
 class Watermark():
 
-    def __init__(self, parent, catalogue, path_image):
+    def __init__(self, parent, catalogue, path_image, nom, r, c, i):
         self.parent = parent
         self.catalogue = catalogue
+        self.nom = nom
         self.path = path_image
+        self.index = i
+        
+        print("watermark id " + str(i) + " : ")
 
         self.image = Image.open(self.path)
-        self.thumbnail = self.image.copy()
         
-
         w, h = self.image.size
         sw, sh = 150, h * 150 / w
         size = sw, sh
 
-        self.canvas = Canvas(self.parent, width=sw, height=sh, highlightthickness = 0)
-        self.canvas.create_image(0, 0, anchor = NW, image=self.image)
+        self.frame = Frame(self.parent, height=250, width=200, bg='white')
+        self.frame.grid(row=r, column=c, pady=(0,20))
+
+        self.button = Button(self.frame, text=nom, command=self.print)
+        self.button.grid(row=0, column=0)
+
+    def print(self):
+        self.catalogue.print(self.index)

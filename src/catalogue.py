@@ -1,7 +1,9 @@
 from tkinter import *
 from PIL import Image, ImageTk
+import os
 
 from photobuy import PhotoBuy
+from watermark import Watermark
 
 class Catalog():
     img = []
@@ -10,23 +12,19 @@ class Catalog():
     ind = 0
 
     watermarks = []
-    thumb_watermarks = []
    
     def __init__(self, parent, root, dir_watermark):
         self.parent = parent
         self.root = root
         self.dir_w = dir_watermark
+        self.print_window = Toplevel(self.root)
+        self.print_window.withdraw()
 
-        for f in self.dir_w:
-            self.watermarks.append(Image.open(self.dir_w + "/" + f))
-            thumb_w = self.watermarks[-1].copy()
-
-            w, h = self.watermarks[-1].size
-            sw, sh = 150, h * 150 / w
-            size = sw, sh
-            
-            thumb_w.thumbnail(size, Image.ANTIALIAS)
-            self.thumb_watermarks.append(thumb_w.copy())
+        i = 0
+        for f in os.listdir(self.dir_w):
+            nom = f.split(".")[0]
+            self.watermarks.append(Watermark(self.print_window, self, self.dir_w + "/" + f, nom, 0, i, i))
+            i = i + 1
 
     def add_picture(self, name, img, qte):
         if int(name) in self.names:
@@ -47,17 +45,16 @@ class Catalog():
         if new_qte==0:
             self.img.pop(index).remove()
             self.names.pop(index)
-            print("remove element " + str(self.nb))
+            print("remove element " + str(self.nb))            
 
-    def print(self):
-
-        self.print_window = Toplevel(self.root)
-
-        for i in self.thumb_watermark:
-            
+    def choose_school(self):
+        self.print_window.update()
+        self.print_window.deiconify()
         
+    def print(self, index):
+        print("ON IMPRIME AVEC " + self.watermarks[index].nom)
+        self.print_window.withdraw()
         return
-        
         nb_pic = 0
         w, h = self.img[0].image.size
         offset = h

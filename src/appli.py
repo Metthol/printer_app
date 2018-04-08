@@ -57,9 +57,9 @@ class Appli:
         
         self.cfr = Frame(self.cc)
 
-        self.catalogue = Catalog(self.cfr, self.root, "test")
+        self.catalogue = Catalog(self.cfr, self.root, self.dir_watermark)
 
-        self.print_button = Button(self.cc, text ="Imprimer", command=self.catalogue.print)
+        self.print_button = Button(self.cc, text ="Imprimer", command=self.catalogue.choose_school)
         self.print_button.grid(row=0, column=0, padx=(150,150))
         
 

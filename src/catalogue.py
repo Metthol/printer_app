@@ -25,6 +25,8 @@ class Catalog():
 
         self.build_check_window()
 
+        self.ephew = Image.open(dir_watermark+"/watermark.png")
+
         i = 0
         for f in os.listdir(self.dir_w):
             nom = f.split(".")[0]
@@ -86,34 +88,35 @@ class Catalog():
         print("oui")
         self.check_window.withdraw()
         
-        return
-
         nb_pic = 0
         w, h = self.img[0].image.size
-        offset = h
-        for i in self.img:
-            nb_pic = nb_pic + i.qte
+        wwidth, wheight = self.ephew.size
+        size = w * 0.1,((w * 0.1 * wheight) / wwidth)
+        self.ephew.thumbnail(size, Image.ANTIALIAS)
 
-        l = h*nb_pic
-        print("size new pic : " + str(w) + "-" + str(l))
+        x = w - wwidth - 25
+        y = h - wheight - 25
 
-        result = Image.new("RGB", (w, l))
-
+        
         pos = 0
+        nb = 0
         for i in self.img:
-            for j in range(0, i.qte):
-                w, h = i.image.size
-                print("avant : " + str(w) + " " + str(h))
-                if w < h:
-                    img = i.image.rotate(90, expand=True)
-                    result.paste(img, (0,pos))
-                    w, h = i.image.size
-                else:
-                    result.paste(i.image, (0,pos))
-                pos = pos + offset
-                print("apres : " + str(w) + " " + str(h))
-                
-        result.save('out.jpg', 'JPEG', quality=100)
+            image = i.image.copy()
+            image.paste(self.ephew, (x, y), self.ephew)
+            print(i.image.filename)
+
+            wwidth, wheight = self.watermarks[self.chosen_watermark].image.size
+            size = w * 0.1,((w * 0.1 * wheight) / wwidth)
+
+            self.watermarks[self.chosen_watermark].image.thumbnail(size, Image.ANTIALIAS)
+            x = 0
+            y = h - wheight
+            image.paste(self.watermarks[self.chosen_watermark].image, (x, y), self.watermarks[self.chosen_watermark].image)
+            image.save("test-"+str(nb)+".jpg", "JPEG", quality=100)
+            nb = nb + 1
+            
+            #for j in range(0, i.qte):
+            #    result.save(i.jpg', 'JPEG', quality=100)
 
 
 

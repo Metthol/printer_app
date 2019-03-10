@@ -3,7 +3,12 @@ body
 	background-color: blue !important;
 }
 
-.col-sm-4
+.selection
 {
 	background-color: red;
+}
+
+.actions
+{
+    background-color: green;
 }

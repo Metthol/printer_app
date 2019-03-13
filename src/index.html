@@ -7,6 +7,9 @@
   <link href="css/bs/bootstrap-theme.css" rel="stylesheet" />
   <link href="css/bs/bootstrap-grid.css" rel="stylesheet" />
   <script src="js/bs/bootstrap.min.js"></script>
+   <script src="js/bs/jquery-3.3.1.min.js"></script>
+   <script src="js/bs/require.js"></script>
+
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
 </head>
@@ -14,20 +17,42 @@
 <body>
 
   <div class="row selection">
-      <div class="col-sm-8 catalogue">
+      <div class="col-sm-8 catalogue" id="choix">
 
       </div>
 
-      <div class="col-sm-4 choix">
+      <div class="col-sm-4">
         <div class="row panier">
         </div>
         <div class="row actions">
-          <div class="col-sm-6"><button type="button" class="btn btn-success">Exporter</button></div>
-          <div class="col-sm-6"><button type="button" class="btn btn-danger">Effacer</button></div>
+          <div class="col-sm-4"><button type="button" class="btn btn-primary" id="rafraichir_bouton">Rafraichir</button></div>
+          <div class="col-sm-4"><button type="button" class="btn btn-success">e</button></div>
+          <div class="col-sm-4"><button type="button" class="btn btn-danger">Effacer</button></div>
         </div>
       </div>
 
   </div>
 
 </body>
+
+<script>
+
+$('#rafraichir_bouton').on('click', function(event) {
+  event.preventDefault(); // To prevent following the link (optional)
+  refresh();
+});
+
+var catalogue = document.getElementById("choix");
+
+function refresh()
+{
+  var i = 0;
+
+  var img = document.createElement("img");
+  img.src="../images/anniv_ (" + i + ".jpg";
+  catalogue.appendChild(img);  
+}
+
+</script>
+
 </html>

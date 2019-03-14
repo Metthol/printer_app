@@ -21,40 +21,63 @@ function generate_thumbnails()
 {
   include $_SERVER['DOCUMENT_ROOT']. "/src/php/variables.php";
 
-  mysql_connect($server, $username, $password)
-  mysql_select_db(strval($database));
+  $mysqli = new mysqli($server, $username, $password, $database);
 
-  );
+  $sql = "SELECT * FROM history ORDER BY id DESC LIMIT 1";
 
-  $result = mysql_query("SELECT * FROM history ORDER BY id DESC LIMIT=1");
-  $last_entry = 0;
+  if (!$result = $mysqli->query($sql))
+  {
+    echo "erreur pendant la requête <br/>";
+    echo $mysqli->errno . " " . $mysqli->error . "<br/>";
+  }
 
-  while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
-    $last_entry = $row[1];
-    $offset = $row[2];
+  $last_entry = "";
+  $offset = 0;
+  echo "<br/>num rows : " . $result->num_rows . "<br/>";
+  if ($result->num_rows === 1)
+  {
+    $row = $result->fetch_assoc();
+    $last_entry = $row['last_value'];
+    $offset = $row['offset'];
+    echo "ok - " . $last_entry;
   }
 
   $files = scandir($dir_images);
-  print_r($files);
 
-  if(last_entry == 0)
-    $i = 2;
-  else
-    $i = intval($offset);
-
-  for($i; $i < sizeof($files); $i++)
+  echo strval($last_entry) . " " . strval($offset) . "<br/>";
+  if($last_entry == "")
   {
-    echo $files[$i] . " ";
+    $i = 2;
+    echo "not good";
+  }
+  else
+  {
+    $i = intval($offset);
+    echo "<br/> offset : " . intval($offset) . "<br/>";
+  }
+
+  $files = array_map('strtolower', $files);
+  sort($files);
+
+  for(; $i < sizeof($files); $i++)
+  {
+    echo $i . " " . $files[$i] . " ";
     $startScan = microtime(true);
     make_thumbnails($files[$i]);
     $endScan = microtime(true);
     echo ($endScan-$startScan) . "<br/>";
   }
 
-  mysql_query("INSERT INTO history ('last_value', 'offset') VALUES($files[$i - 1], $i)");
+  if ($stmt = $mysqli->prepare("INSERT INTO history (last_value, offset) VALUES(?, ?)"))
+  {
+    $stmt->bind_param("si", $files[$i - 1], $i);
+    $stmt->execute();
+    $stmt->close();
+    echo "<br/>good request";
+  }
 
-  mysql_free_result($result);
-  mysql_close();
+  $result->free();
+  $mysqli->close();
 
 
 }

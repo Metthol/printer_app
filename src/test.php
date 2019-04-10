@@ -16,6 +16,8 @@
 
 <body>
 
+ <div id="overlay" onclick="off()"><img src="" id="image_overlay"/></div> 
+
   <div class="row selection">
       <div class="col-sm-8 catalogue" id="choix">
       <?php
@@ -28,17 +30,17 @@ init_session();
 generate_thumbnails();
 
 ?>
-    <div id="test_ajax"></div>
 
+            <div class="row" id="display"></div>
       </div>
 
       <div class="col-sm-4">
-        <div class="row panier">
+        <div class="row" id="panier">
         </div>
         <div class="row actions">
           <div class="col-sm-4"><button type="button" class="btn btn-primary" id="rafraichir_bouton">Rafraichir</button></div>
-          <div class="col-sm-4"><button type="button" class="btn btn-success">e</button></div>
-          <div class="col-sm-4"><button type="button" class="btn btn-danger">Effacer</button></div>
+          <div class="col-sm-4"><button type="button" class="btn btn-success" id="exporter_bouton">Exporter</button></div>
+          <div class="col-sm-4"><button type="button" class="btn btn-danger" id="effacer">Effacer</button></div>
         </div>
       </div>
 
@@ -53,9 +55,65 @@ $('#rafraichir_bouton').on('click', function(event) {
   refresh();
 });
 
+$('#exporter_bouton').on('click', function(event)
+{
+    event.preventDefault();
+    exporter();
+}
+);
+
+$('#effacer').on('click', function(event)
+{
+    event.preventDefault();
+    effacer_selection();
+}
+);
+
 display_thumbnails(1);
 
-var catalogue = document.getElementById("choix");
+var catalogue = document.getElementById("display");
+var panier = document.getElementById("panier");
+
+var nb_pictures = 0;
+
+function effacer_selection()
+{
+    while (panier.firstChild) {
+        panier.removeChild(panier.firstChild);
+    }
+}
+
+function exporter()
+{
+    var items = document.getElementsByClassName("image_to_print");
+
+    var liste = [];
+    var qte = [];
+
+    for(var i = 0; i < items.length; i++)
+    {
+        console.log(items.item(i).getElementsByClassName("image_print_class")[0].getAttribute("nom_image"));
+        console.log(items.item(i).getElementsByClassName("value_print_class")[0].getAttribute("value"));
+        liste.push(items.item(i).getElementsByClassName("image_print_class")[0].getAttribute("nom_image"));
+        qte.push(items.item(i).getElementsByClassName("value_print_class")[0].getAttribute("value"));
+    }
+    console.log(liste);
+    console.log(qte);
+
+    var listeString = JSON.stringify(liste);
+    var qteString = JSON.stringify(qte);
+
+    $.ajax({
+        type: "POST",
+        url: 'php/reduction_image.php',
+        data: {action:'export', liste_image:listeString, qte_image:qteString}, 
+        cache: false,
+
+        success: function(){
+            alert("OK");
+        }
+    });
+}
 
 function refresh()
 {
@@ -82,15 +140,28 @@ function display_thumbnails(full_preview)
         url: 'php/reduction_image.php',
         data: {action:'get_images', full:full_preview},
         success: function(result) {
-            $('#test_ajax').html(result);
-            console.log(result);
             result = $.parseJSON(result);
             for(var i = 0; i < result.length; i++)
             {
+                var my_div = document.createElement("div");
+                my_div.className = "col-sm-4 container_hover";
                 var img = document.createElement("img");
-                img.src="../thumbnails/" + result[i];
-                console.log(result[i]);
-                catalogue.appendChild(img);
+                img.className = "image_hover";
+                img.setAttribute("onclick", "on(\"" + result[i] +"\")");
+                img.src="../thumbnails/thumbnail_" + result[i];
+                img.id = "image_catalogue-" + nb_pictures.toString();
+
+
+
+                var div_selection = document.createElement("div");
+                div_selection.className = "input-group";
+                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">+</button>';
+
+                my_div.appendChild(img);
+                my_div.appendChild(div_selection);
+                catalogue.appendChild(my_div);
+
+                nb_pictures = nb_pictures + 1;
 
             }
               
@@ -98,6 +169,66 @@ function display_thumbnails(full_preview)
     });
 }
 
+function on(chemin) {
+  document.getElementById("overlay").style.display = "block";
+  var img = document.getElementById("image_overlay");
+  img.src="../images/" + chemin;
+}
+
+function off() {
+  document.getElementById("overlay").style.display = "none";
+}
+
+function change_qty(qte, id, value)
+{
+    var img_ori = document.getElementById("image_catalogue-" + id.toString());
+
+    var img_qte = document.getElementById("image_qte_" + id.toString());
+    var img = document.getElementById("image_" + id.toString());
+
+    if(img_qte === null)
+    {
+        if(qte != "-1")
+        {
+            var my_div = document.createElement("div");
+            my_div.className = "col-sm-12 image_to_print";
+            my_div.id = "item_image" + id.toString();
+            var new_img = document.createElement("img");
+            new_img.src = img_ori.src;
+            new_img.id=('image_' + id);
+            new_img.setAttribute("nom_image", value);
+            new_img.setAttribute("class", "image_print_class");
+
+            img_qte = document.createElement("input");
+            img_qte.id = "image_qte_" + id.toString();
+            img_qte.setAttribute("type", "number");
+            img_qte.setAttribute("value", "1");
+            img_qte.setAttribute("class", "value_print_class")
+
+            my_div.appendChild(new_img);
+            my_div.appendChild(img_qte);
+            panier.appendChild(my_div);
+        }
+    }
+    else
+    {
+        var new_qte = img_qte.getAttribute("value");
+        new_qte = parseInt(new_qte);
+        new_qte = new_qte + parseInt(qte);
+        img_qte.setAttribute("value", new_qte.toString());
+
+        if(new_qte === 0)
+        {
+            console.log("better to delete");
+            document.getElementById("item_image" + id.toString()).remove();
+        }
+
+        
+    }
+}
+
+
 </script>
+
 
 </html>

@@ -5,7 +5,55 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
     switch($action) {
         case 'generate' : generate_thumbnails();break;
         case 'get_images' : get_images($_POST['full']);break;
+        case 'export' : exporter($_POST['liste_image'], $_POST['qte_image']);break;
     }
+}
+
+function exporter($li, $qi)
+{
+  $lli = json_decode($li);
+  $qqi = json_decode($qi);
+
+  $stamp1 = imagecreatefrompng("../../assets/watermark.png");
+  $stamp2 = imagecreatefrompng("../../assets/rdt.png");
+
+  $mr = 10;
+  $mb = 10;
+  $sx1 = imagesx($stamp1);
+  $sy1 = imagesy($stamp1);
+
+  $sx2 = imagesx($stamp2);
+  $sy2 = imagesy($stamp2);
+
+  $files = scandir("../../output/");
+
+  $nbdir = sizeof($files);
+
+  if ($nbdir < 10)
+    $nbdir = "00" . strval($nbdir);
+  else if($nbdir < 100)
+    $nbdir = "0" . strval($nbdir);
+  else
+    $nbdir = strval($nbdir);
+
+  mkdir("../../output/" . $nbdir);
+
+  for($i = 0; $i < sizeof($lli); $i++)
+  {
+    $im = imagecreatefromjpeg("../../images/" . $lli[$i]);
+
+    if(!imagecopy($im, $stamp1, imagesx($im) - $sx1 - $mr, imagesy($im) - $sy1 - $mb, 0, 0, $sx1, $sy1))
+      error_log("probleme watermark");
+
+    if(!imagecopy($im, $stamp2, $mr, imagesy($im) - $sy2 - $mb, 0, 0, $sx2, $sy2))
+      error_log("probleme watermark 2");
+
+    for($j = 0; $j < $qqi[$i]; $j++)
+    {
+      imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
+    }
+    
+  }
 }
 
 function get_images($full_preview)
@@ -43,7 +91,7 @@ function get_images($full_preview)
     }
 
     while ($row = $result->fetch_assoc()) {
-      array_push($array, $row['thumbnail']);
+      array_push($array, $row['picture']);
     }
   }
 
@@ -59,8 +107,18 @@ function make_thumbnails($name)
   $img_width = imagesx($img);
   $img_height = imagesy($img);
 
-  $thumbnail_width = 200;
-  $thumbnail_height = (200 / $img_width) * $img_height;
+  $thumbnail_height = 0;
+  $thumbnail_width = 0;
+
+  if ($img_width > $img_height) {
+    $thumbnail_width = 400;
+    $thumbnail_height = (400 / $img_width) * $img_height;
+  } else {
+    $thumbnail_width = 400;
+    $thumbnail_height = (400 / $img_width) * $img_height;
+    $thumbnail_width = ($thumbnail_height / $img_height) * $img_width;
+
+  }
 
   $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
   imagecopyresized($new_image, $img, 0, 0, 0, 0, $thumbnail_width, $thumbnail_height, $img_width, $img_height);
@@ -83,27 +141,22 @@ function generate_thumbnails()
 
   $last_entry = "";
   $offset = 0;
-  echo "<br/>num rows : " . $result->num_rows . "<br/>";
   if ($result->num_rows === 1)
   {
     $row = $result->fetch_assoc();
     $last_entry = $row['last_value'];
     $offset = $row['offset'];
-    echo "ok - " . $last_entry;
   }
 
   $files = scandir($dir_images);
 
-  echo strval($last_entry) . " " . strval($offset) . "<br/>";
   if($last_entry == "")
   {
     $i = 2;
-    echo "not good";
   }
   else
   {
     $i = intval($offset);
-    echo "<br/> offset : " . intval($offset) . "<br/>";
   }
 
   $files = array_map('strtolower', $files);
@@ -113,11 +166,9 @@ function generate_thumbnails()
 
   for(; $i < sizeof($files); $i++)
   {
-    echo $i . " " . $files[$i] . " ";
     $startScan = microtime(true);
     make_thumbnails($files[$i]);
     $endScan = microtime(true);
-    echo ($endScan-$startScan) . "<br/>";
 
     if ($stmt = $mysqli->prepare("INSERT INTO thumbnails (thumbnail, picture) VALUES(?, ?)"))
     {
@@ -149,8 +200,7 @@ function generate_thumbnails()
 
   if (!$result = $mysqli->query($sql))
   {
-    echo "erreur pendant la requête <br/>";
-    echo $mysqli->errno . " " . $mysqli->error . "<br/>";
+    echo "erreur pendant la requête <br/>" . $mysqli->errno . " " . $mysqli->error . "<br/>";
   }
 
   $last_id = 0;
@@ -168,7 +218,6 @@ function generate_thumbnails()
     $stmt->bind_param("sii", $files[$i - 1], $val_offset, $j);
     $stmt->execute();
     $stmt->close();
-    echo "<br/>good request";
   }
 
   $result->free();

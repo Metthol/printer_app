@@ -19,6 +19,17 @@
   <div class="row selection">
       <div class="col-sm-8 catalogue" id="choix">
 
+      <?php
+
+include $_SERVER['DOCUMENT_ROOT'] . "/src/php/init_session.php";
+include $_SERVER['DOCUMENT_ROOT'] . "/src/php/reduction_image.php";
+
+init_session();
+
+generate_thumbnails();
+
+?>
+
       </div>
 
       <div class="col-sm-4">

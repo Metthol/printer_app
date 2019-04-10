@@ -14,25 +14,67 @@ body
 
 .catalogue
 {
-    background-color: red;
+    background-color: #FFFFFF;
     height:100vh;
     overflow:auto;
 }
 
 .choix
 {
-    background-color: purple;
+    
 }
 
-.panier
+#panier
 {
-    background-color:grey;
+    background-color:#DDDDDD;
     overflow:auto;
     height: 90vh;
 }
 
 .actions
 {
-    background-color: green;
+    background-color: #DDDDFF;
     height:10vh;
+}
+
+
+.image_hover
+{
+  opacity: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  backface-visibility: hidden;
+}
+
+.container_hover
+{
+    background-color:white;
+}
+
+.container_hover:hover .image_hover {
+  opacity: 0.3;
+}
+
+#overlay
+{
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.8); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+#image_overlay
+{
+    height:70%;
+      position: absolute;
+      top: 10%;
+      left: 10%;
 }

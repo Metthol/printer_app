@@ -108,51 +108,11 @@ function effacer_selection()
 
 function exporter()
 {
-    // Pop-up
-    toastr.options = {
-      "closeButton": false,
-      "debug": false,
-      "newestOnTop": false,
-      "progressBar": false,
-      "positionClass": "toast-top-right",
-      "preventDuplicates": false,
-      "onclick": null,
-      "showDuration": "300",
-      "hideDuration": "1000",
-      "timeOut": "10000",
-      "extendedTimeOut": "1000",
-      "showEasing": "swing",
-      "hideEasing": "linear",
-      "showMethod": "fadeIn",
-      "hideMethod": "fadeOut"
-    }
-    toastr.remove() // Hard remove
-    // toastr.clear() // Soft remove (with animation)
-    toastr["success"]("L'export est en cours", "Export en cours")
-
+    toast.success("Export en cours", "L'export est en cours", false, "10000", true, true)
 
     var items = document.getElementsByClassName("image_to_print");
     if(items.length == 0){ // No item to export
-      toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": true,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "2800",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-      }
-      toastr.remove() // Hard remove
-      // toastr.clear() // Soft remove (with animation)
-      toastr["error"]("", "Aucune image sélectionnée pour l'exportation")
+      toast.error("Aucune image sélectionnée pour l'exportation", "", true, "2800", true, true)
       return false;
     }
 
@@ -196,26 +156,7 @@ function refresh()
                       console.log("super");
                   },
         complete: function(output) {
-            toastr.options = {
-              "closeButton": false,
-              "debug": false,
-              "newestOnTop": false,
-              "progressBar": true,
-              "positionClass": "toast-top-right",
-              "preventDuplicates": false,
-              "onclick": null,
-              "showDuration": "300",
-              "hideDuration": "1000",
-              "timeOut": "800",
-              "extendedTimeOut": "1000",
-              "showEasing": "swing",
-              "hideEasing": "linear",
-              "showMethod": "fadeIn",
-              "hideMethod": "fadeOut"
-            }
-            toastr.remove() // Hard remove
-            // toastr.clear() // Soft remove (with animation)
-            toastr["success"]("", "Rafraîchi")
+            toast.success("Rafraîchi", "", true, "800", true, true)
             display_thumbnails(0);
         },
 });
@@ -316,6 +257,60 @@ function change_qty(qte, id, value)
         
     }
 }
+
+  var toast = {
+    error : function(title, message, progressBar=true, duration="1500", clean=false, forceClean=true){
+      toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": progressBar,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": duration,
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      if(clean)
+        if(forceClean)
+          toastr.remove()
+        else
+          toastr.clear()
+      toastr["error"](message, title)
+    },
+    success : function(title, message, progressBar=true, duration="1500", clean=false, forceClean=true){
+      toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": progressBar,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": duration,
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      if(clean)
+        if(forceClean)
+          toastr.remove()
+        else
+          toastr.clear()
+      toastr["success"](message, title)
+
+    }
+  }
 
 
 </script>

@@ -5,7 +5,7 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
     switch($action) {
         case 'generate' : generate_thumbnails();break;
         case 'get_images' : get_images($_POST['full']);break;
-        case 'export' : exporter($_POST['liste_image'], $_POST['qte_image']);break;
+        case 'export' : header('Content-Type: application/json'); echo exporter($_POST['liste_image'], $_POST['qte_image']);break;
     }
 }
 
@@ -56,6 +56,10 @@ function exporter($li, $qi)
     imagedestroy($im);
     
   }
+
+  return json_encode(array(
+    "dir_name" => $nbdir
+  ));
 }
 
 function get_images($full_preview)

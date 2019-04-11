@@ -108,9 +108,8 @@ function effacer_selection()
 
 function exporter()
 {
-    toast.success("Export en cours", "L'export est en cours", false, "10000", true, true)
-
     var items = document.getElementsByClassName("image_to_print");
+
     if(items.length == 0){ // No item to export
       toast.error("Aucune image sélectionnée pour l'exportation", "", true, "2800", true, true)
       return false;
@@ -118,16 +117,22 @@ function exporter()
 
     var liste = [];
     var qte = [];
+    var allQte = 0;
 
     for(var i = 0; i < items.length; i++)
     {
         console.log(items.item(i).getElementsByClassName("image_print_class")[0].getAttribute("nom_image"));
         console.log(items.item(i).getElementsByClassName("value_print_class")[0].getAttribute("value"));
         liste.push(items.item(i).getElementsByClassName("image_print_class")[0].getAttribute("nom_image"));
-        qte.push(items.item(i).getElementsByClassName("value_print_class")[0].getAttribute("value"));
+        // Get value even if it has been manually changed in field
+        t_qte = parseInt(items.item(i).getElementsByClassName("value_print_class")[0].valueAsNumber);
+        qte.push(t_qte);
+        allQte += t_qte;
+        // qte.push(items.item(i).getElementsByClassName("value_print_class")[0].getAttribute("value"));
     }
     console.log(liste);
     console.log(qte);
+    toast.success("Export en cours", "L'export de " + allQte + " photos est en cours", false, "10000", true, true);
 
     var listeString = JSON.stringify(liste);
     var qteString = JSON.stringify(qte);
@@ -138,8 +143,9 @@ function exporter()
         data: {action:'export', liste_image:listeString, qte_image:qteString}, 
         cache: false,
 
-        success: function(){
-            alert("OK");
+        success: function(data){
+            alert("Export terminé !\n\nRetrouvez les photos dans le dossier " + ("dir_name" in data ? data.dir_name : "output/xx"));
+            console.log(data);
             toastr.remove() // Hard remove
         }
     });
@@ -156,7 +162,7 @@ function refresh()
                       console.log("super");
                   },
         complete: function(output) {
-            toast.success("Rafraîchi", "", true, "800", true, true)
+            toast.success("Rafraîchi", "", true, "800", false)
             display_thumbnails(0);
         },
 });

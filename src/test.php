@@ -15,6 +15,7 @@
 
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
+
 </head>
 
 <body>
@@ -53,8 +54,11 @@ generate_thumbnails();
 
 <script>
 
+var darkModeEnabled = true;
+var backgroundColor = "#FFFFFF";
+
 $(document).keypress(function(e) {
-  // r = 114 ; e = 101; c = 99
+  // r = 114 ; e = 101; c = 99; 27 = escape; h = 104; s = 114; d = 100
   switch(e.which){
     case 99: // 'c' key
       effacer_selection();
@@ -68,10 +72,37 @@ $(document).keypress(function(e) {
       refresh();
       break;
 
+    case 27: // Escape
+      off();
+      break;
+
+    case 104: // 'h' key
+      hideAllThumbnails();
+      break;
+
+    case 114:
+      showAllThumbnails();
+      break;
+
+    case 100:
+      switchDarkLightMode();
+      break;
+
     default:
       break;
   }
 });
+
+function switchDarkLightMode(){
+  darkModeEnabled = !darkModeEnabled;
+  setLightMode();
+}
+
+function setLightMode(){
+  backgroundColor = darkModeEnabled ? "#635A5A" : "#FFFFFF";
+  $(".catalogue").css("background-color", backgroundColor)
+  $(".container_hover").css("background-color", backgroundColor)
+}
 
 $('#rafraichir_bouton').on('click', function(event) {
   event.preventDefault(); // To prevent following the link (optional)
@@ -93,6 +124,7 @@ $('#effacer').on('click', function(event)
 );
 
 display_thumbnails(1);
+setLightMode();
 
 var catalogue = document.getElementById("display");
 var panier = document.getElementById("panier");
@@ -165,9 +197,21 @@ function refresh()
             toast.success("Rafraîchi", "", true, "800", false)
             display_thumbnails(0);
         },
-});
+    });
 
+}
 
+function hideThumbnail(pict_id){
+  var picts = document.getElementsByClassName("container_hover")
+  $(picts[pict_id]).hide()
+}
+
+function hideAllThumbnails(){
+  $(".container_hover").hide();
+}
+
+function showAllThumbnails(){
+  $(".container_hover").show();
 }
 
 function display_thumbnails(full_preview)
@@ -185,6 +229,7 @@ function display_thumbnails(full_preview)
                 var img = document.createElement("img");
                 img.className = "image_hover";
                 img.setAttribute("onclick", "on(\"" + result[i] +"\")");
+                my_div.setAttribute("css", "background-color: " + backgroundColor);
                 img.src="../thumbnails/thumbnail_" + result[i];
                 img.id = "image_catalogue-" + nb_pictures.toString();
 
@@ -192,7 +237,7 @@ function display_thumbnails(full_preview)
 
                 var div_selection = document.createElement("div");
                 div_selection.className = "input-group";
-                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">+</button>';
+                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">+</button><button style="position: absolute; right: 0;" type="button" class="btn btn-danger" onclick="hideThumbnail(' + nb_pictures + ')"><img style="max-width: 16px;" src="img/trash.png"></button>';
 
                 my_div.appendChild(img);
                 my_div.appendChild(div_selection);
@@ -201,6 +246,7 @@ function display_thumbnails(full_preview)
                 nb_pictures = nb_pictures + 1;
 
             }
+            setLightMode();
               
         },
     });

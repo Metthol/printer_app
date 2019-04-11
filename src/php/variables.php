@@ -1,7 +1,7 @@
 <?php
 
-$dir_images = $_SERVER['DOCUMENT_ROOT'] . "/images/";
-$dir_thumbnails = $_SERVER['DOCUMENT_ROOT'] . "/thumbnails/";
+$dir_images = "../../images/";
+$dir_thumbnails = "../../thumbnails/";
 
 $server = "localhost";
 $username = "root";

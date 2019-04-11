@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 if(isset($_POST['action']) && !empty($_POST['action'])) {
     $action = $_POST['action'];
@@ -17,8 +17,8 @@ function exporter($li, $qi)
   $stamp1 = imagecreatefrompng("../../assets/watermark.png");
   $stamp2 = imagecreatefrompng("../../assets/rdt.png");
 
-  $mr = 10;
-  $mb = 10;
+  $mr = 105;
+  $mb = 80;
   $sx1 = imagesx($stamp1);
   $sy1 = imagesy($stamp1);
 
@@ -52,6 +52,8 @@ function exporter($li, $qi)
     {
       imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
     }
+
+    imagedestroy($im);
     
   }
 }
@@ -60,7 +62,7 @@ function get_images($full_preview)
 {
   $array = array();
 
-  include $_SERVER['DOCUMENT_ROOT']. "/src/php/variables.php";
+  include "variables.php";
     $mysqli = new mysqli($server, $username, $password, $database);
 
 
@@ -100,7 +102,7 @@ function get_images($full_preview)
 
 function make_thumbnails($name)
 {
-  include $_SERVER['DOCUMENT_ROOT']. "/src/php/variables.php";
+  include "variables.php";
 
   $img = imagecreatefromjpeg($dir_images . $name);
   
@@ -127,7 +129,7 @@ function make_thumbnails($name)
 
 function generate_thumbnails()
 {
-  include $_SERVER['DOCUMENT_ROOT']. "/src/php/variables.php";
+  include "variables.php";
 
   $mysqli = new mysqli($server, $username, $password, $database);
 
@@ -166,31 +168,33 @@ function generate_thumbnails()
 
   for(; $i < sizeof($files); $i++)
   {
-    $startScan = microtime(true);
-    make_thumbnails($files[$i]);
-    $endScan = microtime(true);
+    if(!is_dir($dir_images."/" .$files[$i])){
+      $startScan = microtime(true);
+      make_thumbnails($files[$i]);
+      $endScan = microtime(true);
 
-    if ($stmt = $mysqli->prepare("INSERT INTO thumbnails (thumbnail, picture) VALUES(?, ?)"))
-    {
-      $name = "thumbnail_" . $files[$i];
-      $stmt->bind_param("ss", $name, $files[$i]);
-      $stmt->execute();
-      $stmt->close();
-    }
+      if ($stmt = $mysqli->prepare("INSERT INTO thumbnails (thumbnail, picture) VALUES(?, ?)"))
+      {
+        $name = "thumbnail_" . $files[$i];
+        $stmt->bind_param("ss", $name, $files[$i]);
+        $stmt->execute();
+        $stmt->close();
+      }
 
-    if ($j == -1)
-    {
-        $sql2 = "SELECT * FROM thumbnails ORDER BY ID DESC LIMIT 1";
-        if (!$result2 = $mysqli->query($sql2))
-        {
-          echo "erreur pendant la requête <br/>" . $mysqli->errno . " " . $mysqli->error . "<br/>";
-        }
+      if ($j == -1)
+      {
+          $sql2 = "SELECT * FROM thumbnails ORDER BY ID DESC LIMIT 1";
+          if (!$result2 = $mysqli->query($sql2))
+          {
+            echo "erreur pendant la requête <br/>" . $mysqli->errno . " " . $mysqli->error . "<br/>";
+          }
 
-        if ($result2->num_rows === 1)
-        {
-          $row2 = $result2->fetch_assoc();
-          $j = intval($row2['id']);
-        }
+          if ($result2->num_rows === 1)
+          {
+            $row2 = $result2->fetch_assoc();
+            $j = intval($row2['id']);
+          }
+      }
     }
 
   }

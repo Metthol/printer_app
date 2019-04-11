@@ -2,7 +2,7 @@
 
 function init_session()
 {
-    include $_SERVER['DOCUMENT_ROOT']. "/src/php/variables.php";
+    include "variables.php";
 
     if(!file_exists($dir_images))
     {

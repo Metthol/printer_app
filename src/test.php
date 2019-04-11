@@ -10,6 +10,9 @@
    <script src="js/bs/jquery-3.3.1.min.js"></script>
    <script src="js/bs/require.js"></script>
 
+  <link rel="stylesheet" href="css/toastr.scss">
+  <script src="js/bs/toastr.js"></script>
+
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
 </head>
@@ -22,8 +25,8 @@
       <div class="col-sm-8 catalogue" id="choix">
       <?php
 
-include $_SERVER['DOCUMENT_ROOT'] . "/src/php/init_session.php";
-include $_SERVER['DOCUMENT_ROOT'] . "/src/php/reduction_image.php";
+include "php/init_session.php";
+include "php/reduction_image.php";
 
 init_session();
 
@@ -49,6 +52,26 @@ generate_thumbnails();
 </body>
 
 <script>
+
+$(document).keypress(function(e) {
+  // r = 114 ; e = 101; c = 99
+  switch(e.which){
+    case 99: // 'c' key
+      effacer_selection();
+      break;
+
+    case 101: // 'e' key
+      exporter();
+      break;
+
+    case 114:
+      refresh();
+      break;
+
+    default:
+      break;
+  }
+});
 
 $('#rafraichir_bouton').on('click', function(event) {
   event.preventDefault(); // To prevent following the link (optional)
@@ -85,7 +108,53 @@ function effacer_selection()
 
 function exporter()
 {
+    // Pop-up
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-top-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "10000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+    toastr.remove() // Hard remove
+    // toastr.clear() // Soft remove (with animation)
+    toastr["success"]("L'export est en cours", "Export en cours")
+
+
     var items = document.getElementsByClassName("image_to_print");
+    if(items.length == 0){ // No item to export
+      toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "2800",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.remove() // Hard remove
+      // toastr.clear() // Soft remove (with animation)
+      toastr["error"]("", "Aucune image sélectionnée pour l'exportation")
+      return false;
+    }
 
     var liste = [];
     var qte = [];
@@ -111,6 +180,7 @@ function exporter()
 
         success: function(){
             alert("OK");
+            toastr.remove() // Hard remove
         }
     });
 }
@@ -126,6 +196,26 @@ function refresh()
                       console.log("super");
                   },
         complete: function(output) {
+            toastr.options = {
+              "closeButton": false,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": true,
+              "positionClass": "toast-top-right",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": "800",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.remove() // Hard remove
+            // toastr.clear() // Soft remove (with animation)
+            toastr["success"]("", "Rafraîchi")
             display_thumbnails(0);
         },
 });

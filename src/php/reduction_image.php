@@ -12,7 +12,7 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
 function exporter($li, $qi)
 {
   include "variables.php";
-  
+
   $lli = json_decode($li);
   $qqi = json_decode($qi);
 
@@ -58,8 +58,6 @@ function exporter($li, $qi)
     imagedestroy($im);
     
   }
-
-  copy($ps_printing_script, "../../output/" . $nbdir . "/Print.ps1");
 
   return json_encode(array(
     "dir_name" => $nbdir

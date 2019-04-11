@@ -9,6 +9,7 @@
   <script src="js/bs/bootstrap.min.js"></script>
    <script src="js/bs/jquery-3.3.1.min.js"></script>
    <script src="js/bs/require.js"></script>
+   <script src="js/exif.js"></script>
 
   <link rel="stylesheet" href="css/toastr.scss">
   <script src="js/bs/toastr.js"></script>
@@ -50,42 +51,65 @@ generate_thumbnails();
 
   </div>
 
+  <div id="last_exports" style="position: absolute; bottom: 10px; left: 0;"></div>
+
 </body>
 
 <script>
 
 var darkModeEnabled = true;
 var backgroundColor = "#FFFFFF";
+var exportIncrement = 0;
+var lastThreeExports = [];
+var preview = false;
+var img_overlay_rotate = 0;
 
 $(document).keypress(function(e) {
-  // r = 114 ; e = 101; c = 99; 27 = escape; h = 104; s = 114; d = 100
+  // r = 114 ; e = 101; c = 99; 27 = escape; h = 104; s = 115; d = 100; i = 105; t = 116
   switch(e.which){
-    case 99: // 'c' key
+    case 99: // 'c' key; cleans backet
       effacer_selection();
       break;
 
-    case 101: // 'e' key
+    case 101: // 'e' key; makes export
       exporter();
       break;
 
-    case 114:
-      refresh();
+    case 114: // 'r' key; refreshes images list, or rotates photo (depending on mode in which user is)
+      if(preview)
+        rotatePreviewedImage();
+      else
+        refresh();
       break;
 
-    case 27: // Escape
+    /*case 27: // Escape from pict
       off();
+      break;*/
+
+    case 13: // 'Enter ' key
+      if(preview)
+        off();
       break;
 
-    case 104: // 'h' key
+    case 104: // 'h' key; hide all pictures from current view
       hideAllThumbnails();
       break;
 
-    case 114:
+    case 115: // 's' press; show all images
       showAllThumbnails();
       break;
 
-    case 100:
+    case 100: // 'd' key press; switch between light/dark mode
       switchDarkLightMode();
+      break;
+
+     case 105:
+      defineIncrement(parseInt(prompt("Next export increment ?", exportIncrement)));
+      break;
+
+     case 116:
+      if(preview)
+        rotatePreviewedImage();
       break;
 
     default:
@@ -93,15 +117,67 @@ $(document).keypress(function(e) {
   }
 });
 
+// Switch to dark or light mode
 function switchDarkLightMode(){
   darkModeEnabled = !darkModeEnabled;
   setLightMode();
 }
 
+// Simply applies mode colors
 function setLightMode(){
   backgroundColor = darkModeEnabled ? "#635A5A" : "#FFFFFF";
   $(".catalogue").css("background-color", backgroundColor)
   $(".container_hover").css("background-color", backgroundColor)
+}
+
+function defineIncrement(incr){
+  exportIncrement = parseInt(incr);
+}
+
+function rotatePreviewedImage()
+{
+  var img = document.getElementById('image_overlay');
+  img_overlay_rotate -= 90;
+  img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
+}
+
+/*
+function getExif() {
+  var img1 = document.getElementById("image_overlay");
+  EXIF.getData(img1, function() {
+    console.log(EXIF.getAllTags(this));
+  });
+};
+*/
+
+// Simply adds current export qty to array
+function addExportToLocalHistory(qty, dir_id)
+{
+  lastThreeExports.push({
+    id: exportIncrement,
+    qty: qty,
+    dir_id: dir_id
+  })
+  if(lastThreeExports.length > 3){
+    lastThreeExports = [
+      lastThreeExports[lastThreeExports.length-1],
+      lastThreeExports[lastThreeExports.length-2],
+      lastThreeExports[lastThreeExports.length-3]
+    ]
+  }
+  exportIncrement++;
+
+  displayLocalExportHistory();
+}
+
+function displayLocalExportHistory()
+{
+  var last_exports = $("#last_exports");
+  last_exports.html("");
+  /*for(var i = 0; i < lastThreeExports.length; i++){
+    var exportt = lastThreeExports[i];
+    last_exports.append("<p>Export n°" + exportt.id + "(" + exportt.dir_id + ") : " + exportt.qty + " photos</p>");
+  }*/
 }
 
 $('#rafraichir_bouton').on('click', function(event) {
@@ -179,6 +255,7 @@ function exporter()
             alert("Export terminé !\n\nRetrouvez les photos dans le dossier " + ("dir_name" in data ? data.dir_name : "output/xx"));
             console.log(data);
             toastr.remove() // Hard remove
+            addExportToLocalHistory(allQte, data.dir_name);
         }
     });
 }
@@ -253,12 +330,16 @@ function display_thumbnails(full_preview)
 }
 
 function on(chemin) {
+  preview = true;
   document.getElementById("overlay").style.display = "block";
   var img = document.getElementById("image_overlay");
   img.src="../images/" + chemin;
+  img_overlay_rotate = 0;
+  img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
 }
 
 function off() {
+  preview = false;
   document.getElementById("overlay").style.display = "none";
 }
 
@@ -308,6 +389,54 @@ function change_qty(qte, id, value)
 
         
     }
+}
+
+function getOrientation(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+
+        var view = new DataView(e.target.result);
+        if (view.getUint16(0, false) != 0xFFD8)
+        {
+            return callback(-2);
+        }
+        var length = view.byteLength, offset = 2;
+        while (offset < length) 
+        {
+            if (view.getUint16(offset+2, false) <= 8) return callback(-1);
+            var marker = view.getUint16(offset, false);
+            offset += 2;
+            if (marker == 0xFFE1) 
+            {
+                if (view.getUint32(offset += 2, false) != 0x45786966) 
+                {
+                    return callback(-1);
+                }
+
+                var little = view.getUint16(offset += 6, false) == 0x4949;
+                offset += view.getUint32(offset + 4, little);
+                var tags = view.getUint16(offset, little);
+                offset += 2;
+                for (var i = 0; i < tags; i++)
+                {
+                    if (view.getUint16(offset + (i * 12), little) == 0x0112)
+                    {
+                        return callback(view.getUint16(offset + (i * 12) + 8, little));
+                    }
+                }
+            }
+            else if ((marker & 0xFF00) != 0xFF00)
+            {
+                break;
+            }
+            else
+            { 
+                offset += view.getUint16(offset, false);
+            }
+        }
+        return callback(-1);
+    };
+    reader.readAsArrayBuffer(file);
 }
 
   var toast = {

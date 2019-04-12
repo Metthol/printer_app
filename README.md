@@ -2,15 +2,15 @@
 
 Dossiers:
 
-src/* : contient les sources html, js, css du projet
-images/* : contient les images du projet
-assets/* : contient les différentes ressources du projet
-bootstrap/* : contient les fichiers sources non modifiés de bootstrap
-old_python/* : contient l'ancien projet en python
+- src/* : contient les sources html, js, css du projet
+- images/* : contient les images du projet
+- assets/* : contient les différentes ressources du projet
+- bootstrap/* : contient les fichiers sources non modifiés de bootstrap
+- old_python/* : contient l'ancien projet en python
 
-src/css/* : contient les feuilles de styles du projet, dont bootstrap
-src/js/* : contient les différents scrips du projet, dont bootstrap
-src/img/* : contient les images utilisées sur le site
+- src/css/* : contient les feuilles de styles du projet, dont bootstrap
+- src/js/* : contient les différents scrips du projet, dont bootstrap
+- src/img/* : contient les images utilisées sur le site
 
 ## WARNING
 

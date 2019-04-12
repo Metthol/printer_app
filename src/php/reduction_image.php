@@ -42,7 +42,15 @@ function exporter($li, $qi)
 
   for($i = 0; $i < sizeof($lli); $i++)
   {
-    $im = imagecreatefromjpeg("../../images/" . $lli[$i]);
+    $imgPath = $dir_images . $lli[$i];
+    $rotDeg = howManyDegShouldPhotoBeRotated($imgPath);
+    if($rotDeg == 0)
+      $im = imagecreatefromjpeg($imgPath);
+    else{
+      $im_src = imagecreatefromjpeg($imgPath);
+      $im = imagerotate($im_src, $rotDeg, 0);
+    }
+
 
     if(!imagecopy($im, $stamp1, imagesx($im) - $sx1 - $mr, imagesy($im) - $sy1 - $mb, 0, 0, $sx1, $sy1))
       error_log("probleme watermark");
@@ -50,13 +58,27 @@ function exporter($li, $qi)
     if(!imagecopy($im, $stamp2, $mr, imagesy($im) - $sy2 - $mb, 0, 0, $sx2, $sy2))
       error_log("probleme watermark 2");
 
-    for($j = 0; $j < $qqi[$i]; $j++)
+/*    for($j = 0; $j < $qqi[$i]; $j++)
     {
       imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
     }
 
     imagedestroy($im);
+    if(isset($im_src))
+      imagedestroy($im_src);   */ 
+
+    $firstInameFilepath = $dir_output . $nbdir . "/image_" . strval($i) . '-' . "0" . ".jpg";
+    imagejpeg($im, $firstInameFilepath);
     
+    imagedestroy($im);
+    if(isset($im_src))
+      imagedestroy($im_src);
+
+    for($j = 1; $j < $qqi[$i]; $j++)
+    {
+      // imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
+      copy($firstInameFilepath, $dir_output . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
+    }
   }
 
   return json_encode(array(

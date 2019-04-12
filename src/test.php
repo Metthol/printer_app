@@ -64,6 +64,9 @@ var exportIncrement = 0;
 var lastThreeExports = [];
 var preview = false;
 var img_overlay_rotate = 0;
+var allImgsData = [];
+var overlayPictId = 0;
+
 if(Cookies.get('exportIncrement') != undefined)
   exportIncrement = Cookies.get('exportIncrement');
 
@@ -118,6 +121,29 @@ $(document).keypress(function(e) {
     default:
       break;
   }
+});
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+          if(preview)
+            overlayLeft();
+          break;
+
+        case 38: // up
+          break;
+
+        case 39: // right
+          if(preview)
+            overlayRight();
+          break;
+
+        case 40: // down
+          break;
+
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault();
 });
 
 // Switch to dark or light mode
@@ -307,13 +333,14 @@ function display_thumbnails(full_preview)
         data: {action:'get_images', full:full_preview},
         success: function(result) {
             result = $.parseJSON(result);
+            allImgsData = result;
             for(var i = 0; i < result.length; i++)
             {
                 var my_div = document.createElement("div");
                 my_div.className = "col-sm-4 container_hover";
                 var img = document.createElement("img");
                 img.className = "image_hover";
-                img.setAttribute("onclick", "on(\"" + result[i].url +"\", " + result[i].rotate + ")");
+                img.setAttribute("onclick", "on(" + i + ", \"" + result[i].url +"\", " + result[i].rotate + ")");
                 my_div.setAttribute("css", "background-color: " + backgroundColor);
                 img.src="../thumbnails/thumbnail_" + result[i].url;
                 img.id = "image_catalogue-" + nb_pictures.toString();
@@ -337,13 +364,34 @@ function display_thumbnails(full_preview)
     });
 }
 
-function on(chemin, rotate) {
+function on(pict_id, chemin, rotate) {
   preview = true;
   document.getElementById("overlay").style.display = "block";
   var img = document.getElementById("image_overlay");
   img.src="../images/" + chemin;
   img_overlay_rotate = -parseInt(rotate);
   img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
+  overlayPictId = pict_id;
+}
+
+function overlayLeft()
+{
+  var img = document.getElementById("image_overlay");
+  img.src="../images/" + chemin;
+  if(overlayPictId > 0){
+    overlayPictId -= 1;
+    img.src = "../images/" + allImgsData[overlayPictId].url;
+  }
+}
+
+function overlayRight()
+{
+  var img = document.getElementById("image_overlay");
+  img.src="../images/" + chemin;
+  if((overlayPictId + 1) < allImgsData.length){
+    overlayPictId += 1;
+    img.src = "../images/" + allImgsData[overlayPictId].url;
+  }
 }
 
 function off() {

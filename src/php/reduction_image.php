@@ -110,8 +110,10 @@ function make_thumbnails($name)
 {
   include "variables.php";
 
-  $img = imagecreatefromjpeg($dir_images . $name);
-  
+  $imgPath = $dir_images . $name;
+  $rotDeg = howManyDegShouldPhotoBeRotated($imgPath);
+  $img = imagecreatefromjpeg($imgPath);
+    
   $img_width = imagesx($img);
   $img_height = imagesy($img);
 
@@ -130,7 +132,12 @@ function make_thumbnails($name)
 
   $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
   imagecopyresized($new_image, $img, 0, 0, 0, 0, $thumbnail_width, $thumbnail_height, $img_width, $img_height);
+  $new_image = imagerotate($new_image, $rotDeg, 0);
+  // imagedestroy($img);
   imagejpeg($new_image, $dir_thumbnails . "/thumbnail_" . $name);
+  
+  imagedestroy($img);
+  imagedestroy($new_image);
 }
 
 function generate_thumbnails()
@@ -234,6 +241,23 @@ function generate_thumbnails()
   $mysqli->close();
 
 
+}
+
+function howManyDegShouldPhotoBeRotated($path){
+  $exif = exif_read_data($path, 'IFD0');
+  // echo $exif===false ? "Aucun en-tête de donnés n'a été trouvé.<br />\n" : "L'image contient des en-têtes<br />\n";
+
+  $exif = exif_read_data($path, 0, true);
+  if(isset($exif['IFD0']) && isset($exif['IFD0']['Orientation']))
+  {
+    if($exif['IFD0']['Orientation'] == 8){
+      return 90;
+    }
+    elseif($exif['IFD0']['Orientation'] == 6)
+      return 270;
+  }
+
+  return 0;
 }
 
 ?>

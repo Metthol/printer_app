@@ -314,7 +314,7 @@ function display_thumbnails(full_preview)
 
                 var div_selection = document.createElement("div");
                 div_selection.className = "input-group";
-                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">+</button><button style="position: absolute; right: 0;" type="button" class="btn btn-danger" onclick="hideThumbnail(' + nb_pictures + ')"><img style="max-width: 16px;" src="img/trash.png"></button>';
+                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i].url +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i].url +'\')">+</button><button style="position: absolute; right: 0;" type="button" class="btn btn-danger" onclick="hideThumbnail(' + nb_pictures + ')"><img style="max-width: 16px;" src="img/trash.png"></button>';
 
                 my_div.appendChild(img);
                 my_div.appendChild(div_selection);

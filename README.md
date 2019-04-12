@@ -43,3 +43,4 @@ Lorsqu'un client souhaite imprimer des photos :
 - Vider le panier : `c` (clear)
 - Afficher / masquer l'ensemble des photos capturées : `s` (show) / `h` (hide)
 - Basculer entre mode sombre / lumineux : `d` (dark)
+- i : Définir la valeur de ticket du prochain export (correspondant au n° d'enveloppe distribué)

@@ -133,6 +133,11 @@ $(document).keydown(function(e) {
         case 38: // up
           break;
 
+        case 27:
+          if(preview)
+            off();
+          break;
+
         case 39: // right
           if(preview)
             overlayRight();

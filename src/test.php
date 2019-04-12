@@ -10,6 +10,7 @@
    <script src="js/bs/jquery-3.3.1.min.js"></script>
    <script src="js/bs/require.js"></script>
    <script src="js/exif.js"></script>
+   <script src="js/js.cookie.js"></script>
 
   <link rel="stylesheet" href="css/toastr.scss">
   <script src="js/bs/toastr.js"></script>
@@ -63,6 +64,8 @@ var exportIncrement = 0;
 var lastThreeExports = [];
 var preview = false;
 var img_overlay_rotate = 0;
+if(Cookies.get('exportIncrement') != undefined)
+  exportIncrement = Cookies.get('exportIncrement');
 
 $(document).keypress(function(e) {
   // r = 114 ; e = 101; c = 99; 27 = escape; h = 104; s = 115; d = 100; i = 105; t = 116
@@ -132,6 +135,7 @@ function setLightMode(){
 
 function defineIncrement(incr){
   exportIncrement = parseInt(incr);
+  Cookies.set('exportIncrement', exportIncrement);
 }
 
 function rotatePreviewedImage()
@@ -166,6 +170,7 @@ function addExportToLocalHistory(qty, dir_id)
     ]
   }
   exportIncrement++;
+  Cookies.set('exportIncrement', exportIncrement);
 
   displayLocalExportHistory();
 }

@@ -261,6 +261,9 @@ function exporter()
             console.log(data);
             toastr.remove() // Hard remove
             addExportToLocalHistory(allQte, data.dir_name);
+        },
+        error: function(err){
+          toast.error("Erreur", "Une erreur s'est produite lors de l'export de vos photos", false, "0");
         }
     });
 }

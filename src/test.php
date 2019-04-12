@@ -126,6 +126,7 @@ $(document).keypress(function(e) {
 $(document).keydown(function(e) {
     switch(e.which) {
         case 37: // left
+          console.log("left");
           if(preview)
             overlayLeft();
           break;
@@ -133,7 +134,13 @@ $(document).keydown(function(e) {
         case 38: // up
           break;
 
+        case 27:
+          if(preview)
+            off();
+          break;
+
         case 39: // right
+          console.log("right");
           if(preview)
             overlayRight();
           break;

@@ -82,9 +82,9 @@ $(document).keypress(function(e) {
       break;
 
     case 114: // 'r' key; refreshes images list, or rotates photo (depending on mode in which user is)
-      if(preview)
-        rotatePreviewedImage();
-      else
+      // if(preview)
+        // rotatePreviewedImage();
+      // else
         refresh();
       break;
 

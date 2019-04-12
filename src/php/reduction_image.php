@@ -42,7 +42,15 @@ function exporter($li, $qi)
 
   for($i = 0; $i < sizeof($lli); $i++)
   {
-    $im = imagecreatefromjpeg("../../images/" . $lli[$i]);
+    $imgPath = $dir_images . $lli[$i];
+    $rotDeg = howManyDegShouldPhotoBeRotated($imgPath);
+    if($rotDeg == 0)
+      $im = imagecreatefromjpeg($imgPath);
+    else{
+      $im_src = imagecreatefromjpeg($imgPath);
+      $im = imagerotate($im_src, $rotDeg, 0);
+    }
+
 
     if(!imagecopy($im, $stamp1, imagesx($im) - $sx1 - $mr, imagesy($im) - $sy1 - $mb, 0, 0, $sx1, $sy1))
       error_log("probleme watermark");
@@ -50,13 +58,27 @@ function exporter($li, $qi)
     if(!imagecopy($im, $stamp2, $mr, imagesy($im) - $sy2 - $mb, 0, 0, $sx2, $sy2))
       error_log("probleme watermark 2");
 
-    for($j = 0; $j < $qqi[$i]; $j++)
+/*    for($j = 0; $j < $qqi[$i]; $j++)
     {
       imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
     }
 
     imagedestroy($im);
+    if(isset($im_src))
+      imagedestroy($im_src);   */ 
+
+    $firstInameFilepath = $dir_output . $nbdir . "/image_" . strval($i) . '-' . "0" . ".jpg";
+    imagejpeg($im, $firstInameFilepath);
     
+    imagedestroy($im);
+    if(isset($im_src))
+      imagedestroy($im_src);
+
+    for($j = 1; $j < $qqi[$i]; $j++)
+    {
+      // imagejpeg($im, "../../output/" . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
+      copy($firstInameFilepath, $dir_output . $nbdir . "/image_" . strval($i) . '-' . strval($j) . ".jpg");
+    }
   }
 
   return json_encode(array(
@@ -99,7 +121,10 @@ function get_images($full_preview)
     }
 
     while ($row = $result->fetch_assoc()) {
-      array_push($array, $row['picture']);
+      array_push($array, array(
+        "url" => $row['picture'],
+        "rotate" => howManyDegShouldPhotoBeRotated($dir_images . $row['picture'])
+      ));
     }
   }
 
@@ -110,8 +135,10 @@ function make_thumbnails($name)
 {
   include "variables.php";
 
-  $img = imagecreatefromjpeg($dir_images . $name);
-  
+  $imgPath = $dir_images . $name;
+  $rotDeg = howManyDegShouldPhotoBeRotated($imgPath);
+  $img = imagecreatefromjpeg($imgPath);
+    
   $img_width = imagesx($img);
   $img_height = imagesy($img);
 
@@ -130,7 +157,13 @@ function make_thumbnails($name)
 
   $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
   imagecopyresized($new_image, $img, 0, 0, 0, 0, $thumbnail_width, $thumbnail_height, $img_width, $img_height);
+  if($rotDeg != 0){
+    $new_image = imagerotate($new_image, $rotDeg, 0);
+  }
   imagejpeg($new_image, $dir_thumbnails . "/thumbnail_" . $name);
+  
+  imagedestroy($img);
+  imagedestroy($new_image);
 }
 
 function generate_thumbnails()
@@ -234,6 +267,23 @@ function generate_thumbnails()
   $mysqli->close();
 
 
+}
+
+function howManyDegShouldPhotoBeRotated($path){
+  $exif = exif_read_data($path, 'IFD0');
+  // echo $exif===false ? "Aucun en-tête de donnés n'a été trouvé.<br />\n" : "L'image contient des en-têtes<br />\n";
+
+  $exif = exif_read_data($path, 0, true);
+  if(isset($exif['IFD0']) && isset($exif['IFD0']['Orientation']))
+  {
+    if($exif['IFD0']['Orientation'] == 8){
+      return 90;
+    }
+    elseif($exif['IFD0']['Orientation'] == 6)
+      return 270;
+  }
+
+  return 0;
 }
 
 ?>

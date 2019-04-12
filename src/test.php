@@ -10,6 +10,7 @@
    <script src="js/bs/jquery-3.3.1.min.js"></script>
    <script src="js/bs/require.js"></script>
    <script src="js/exif.js"></script>
+   <script src="js/js.cookie.js"></script>
 
   <link rel="stylesheet" href="css/toastr.scss">
   <script src="js/bs/toastr.js"></script>
@@ -47,7 +48,7 @@ generate_thumbnails();
           <div class="col-sm-4"><button type="button" class="btn btn-success" id="exporter_bouton">Exporter</button></div>
           <div class="col-sm-4"><button type="button" class="btn btn-danger" id="effacer">Effacer</button></div>
 
-          <div id="last_exports" style="position: absolute; bottom: 10px; left: 0;"></div>
+          <div id="last_exports" style="position: absolute; bottom: 6px; left: 0;"></div>
         </div>
       </div>
 
@@ -63,6 +64,8 @@ var exportIncrement = 0;
 var lastThreeExports = [];
 var preview = false;
 var img_overlay_rotate = 0;
+if(Cookies.get('exportIncrement') != undefined)
+  exportIncrement = Cookies.get('exportIncrement');
 
 $(document).keypress(function(e) {
   // r = 114 ; e = 101; c = 99; 27 = escape; h = 104; s = 115; d = 100; i = 105; t = 116
@@ -132,6 +135,7 @@ function setLightMode(){
 
 function defineIncrement(incr){
   exportIncrement = parseInt(incr);
+  Cookies.set('exportIncrement', exportIncrement);
 }
 
 function rotatePreviewedImage()
@@ -158,14 +162,15 @@ function addExportToLocalHistory(qty, dir_id)
     qty: qty,
     dir_id: dir_id
   })
-  if(lastThreeExports.length > 3){
+  if(lastThreeExports.length > 2){
     lastThreeExports = [
-      lastThreeExports[lastThreeExports.length-3],
+      // lastThreeExports[lastThreeExports.length-3],
       lastThreeExports[lastThreeExports.length-2],
       lastThreeExports[lastThreeExports.length-1]
     ]
   }
   exportIncrement++;
+  Cookies.set('exportIncrement', exportIncrement);
 
   displayLocalExportHistory();
 }
@@ -176,7 +181,7 @@ function displayLocalExportHistory()
   last_exports.html("");
   for(var i = 0; i < lastThreeExports.length; i++){
     var exportt = lastThreeExports[i];
-    last_exports.append("<p style='margin-bottom: 1px;'>Export n°" + exportt.id + "(" + exportt.dir_id + ") : " + exportt.qty + " photos</p>");
+    last_exports.append("<p style='margin-bottom: 1px; margin-top: 1px; line-height: 15px;'>Export n°" + exportt.id + "(" + exportt.dir_id + ") : " + exportt.qty + " photos</p>");
   }
 }
 
@@ -256,6 +261,9 @@ function exporter()
             console.log(data);
             toastr.remove() // Hard remove
             addExportToLocalHistory(allQte, data.dir_name);
+        },
+        error: function(err){
+          toast.error("Erreur", "Une erreur s'est produite lors de l'export de vos photos", false, "0");
         }
     });
 }
@@ -305,16 +313,16 @@ function display_thumbnails(full_preview)
                 my_div.className = "col-sm-4 container_hover";
                 var img = document.createElement("img");
                 img.className = "image_hover";
-                img.setAttribute("onclick", "on(\"" + result[i] +"\")");
+                img.setAttribute("onclick", "on(\"" + result[i].url +"\", " + result[i].rotate + ")");
                 my_div.setAttribute("css", "background-color: " + backgroundColor);
-                img.src="../thumbnails/thumbnail_" + result[i];
+                img.src="../thumbnails/thumbnail_" + result[i].url;
                 img.id = "image_catalogue-" + nb_pictures.toString();
 
 
 
                 var div_selection = document.createElement("div");
                 div_selection.className = "input-group";
-                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i] +'\')">+</button><button style="position: absolute; right: 0;" type="button" class="btn btn-danger" onclick="hideThumbnail(' + nb_pictures + ')"><img style="max-width: 16px;" src="img/trash.png"></button>';
+                div_selection.innerHTML = '<button type="button" class="btn btn-danger" onclick="change_qty(-1, ' + nb_pictures.toString() + ', \'' + result[i].url +'\')">-</button><button type="button" class="btn btn-success" onclick="change_qty(1, ' + nb_pictures.toString() + ', \'' + result[i].url +'\')">+</button><button style="position: absolute; right: 0;" type="button" class="btn btn-danger" onclick="hideThumbnail(' + nb_pictures + ')"><img style="max-width: 16px;" src="img/trash.png"></button>';
 
                 my_div.appendChild(img);
                 my_div.appendChild(div_selection);
@@ -329,12 +337,12 @@ function display_thumbnails(full_preview)
     });
 }
 
-function on(chemin) {
+function on(chemin, rotate) {
   preview = true;
   document.getElementById("overlay").style.display = "block";
   var img = document.getElementById("image_overlay");
   img.src="../images/" + chemin;
-  img_overlay_rotate = 0;
+  img_overlay_rotate = -parseInt(rotate);
   img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
 }
 

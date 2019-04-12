@@ -1,18 +1,30 @@
 <?php
 
-if(isset($_POST['action']) && !empty($_POST['action'])) {
-    $action = $_POST['action'];
-    switch($action) {
-        case 'generate' : generate_thumbnails();break;
-        case 'get_images' : get_images($_POST['full']);break;
-        case 'export' : header('Content-Type: application/json'); echo exporter($_POST['liste_image'], $_POST['qte_image']);break;
-    }
+$json = false;
+
+if(isset($_GET['json']) && !empty($_GET['json']) && strtolower($_GET['json']) == "true") {
+    $json = true;
 }
 
-$req = "TRUNCATE TABLE history; TRUNCATE TABLE thumbnails;";
+$req1 = "TRUNCATE TABLE `thumbnails`";
+$req2 = "TRUNCATE TABLE `history`";
 include "variables.php";
 $mysqli = new mysqli($server, $username, $password, $database);
 
-$mysqli->query($req);
+$mysqli->query($req1);
+$mysqli->query($req2);
+
+// array_map('unlink', array_filter((array) glob("../../output/*")));
+
+if($json){
+	header('Content-Type: application/json');
+	echo json_encode(
+		array("success" => true)
+	);
+}else{
+	echo "Base de données et fichiers générés nettoyés";
+}
+
+exit();
 
 ?>

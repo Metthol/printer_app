@@ -46,12 +46,12 @@ generate_thumbnails();
           <div class="col-sm-4"><button type="button" class="btn btn-primary" id="rafraichir_bouton">Rafraichir</button></div>
           <div class="col-sm-4"><button type="button" class="btn btn-success" id="exporter_bouton">Exporter</button></div>
           <div class="col-sm-4"><button type="button" class="btn btn-danger" id="effacer">Effacer</button></div>
+
+          <div id="last_exports" style="position: absolute; bottom: 10px; left: 0;"></div>
         </div>
       </div>
 
   </div>
-
-  <div id="last_exports" style="position: absolute; bottom: 10px; left: 0;"></div>
 
 </body>
 
@@ -160,9 +160,9 @@ function addExportToLocalHistory(qty, dir_id)
   })
   if(lastThreeExports.length > 3){
     lastThreeExports = [
-      lastThreeExports[lastThreeExports.length-1],
+      lastThreeExports[lastThreeExports.length-3],
       lastThreeExports[lastThreeExports.length-2],
-      lastThreeExports[lastThreeExports.length-3]
+      lastThreeExports[lastThreeExports.length-1]
     ]
   }
   exportIncrement++;
@@ -174,10 +174,10 @@ function displayLocalExportHistory()
 {
   var last_exports = $("#last_exports");
   last_exports.html("");
-  /*for(var i = 0; i < lastThreeExports.length; i++){
+  for(var i = 0; i < lastThreeExports.length; i++){
     var exportt = lastThreeExports[i];
-    last_exports.append("<p>Export n°" + exportt.id + "(" + exportt.dir_id + ") : " + exportt.qty + " photos</p>");
-  }*/
+    last_exports.append("<p style='margin-bottom: 1px;'>Export n°" + exportt.id + "(" + exportt.dir_id + ") : " + exportt.qty + " photos</p>");
+  }
 }
 
 $('#rafraichir_bouton').on('click', function(event) {

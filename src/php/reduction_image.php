@@ -99,7 +99,10 @@ function get_images($full_preview)
     }
 
     while ($row = $result->fetch_assoc()) {
-      array_push($array, $row['picture']);
+      array_push($array, array(
+        "url" => $row['picture'],
+        "rotate" => howManyDegShouldPhotoBeRotated($dir_images . $row['picture'])
+      ));
     }
   }
 
@@ -132,8 +135,9 @@ function make_thumbnails($name)
 
   $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
   imagecopyresized($new_image, $img, 0, 0, 0, 0, $thumbnail_width, $thumbnail_height, $img_width, $img_height);
-  $new_image = imagerotate($new_image, $rotDeg, 0);
-  // imagedestroy($img);
+  if($rotDeg != 0){
+    $new_image = imagerotate($new_image, $rotDeg, 0);
+  }
   imagejpeg($new_image, $dir_thumbnails . "/thumbnail_" . $name);
   
   imagedestroy($img);

@@ -305,9 +305,9 @@ function display_thumbnails(full_preview)
                 my_div.className = "col-sm-4 container_hover";
                 var img = document.createElement("img");
                 img.className = "image_hover";
-                img.setAttribute("onclick", "on(\"" + result[i] +"\")");
+                img.setAttribute("onclick", "on(\"" + result[i].url +"\", " + result[i].rotate + ")");
                 my_div.setAttribute("css", "background-color: " + backgroundColor);
-                img.src="../thumbnails/thumbnail_" + result[i];
+                img.src="../thumbnails/thumbnail_" + result[i].url;
                 img.id = "image_catalogue-" + nb_pictures.toString();
 
 
@@ -329,12 +329,12 @@ function display_thumbnails(full_preview)
     });
 }
 
-function on(chemin) {
+function on(chemin, rotate) {
   preview = true;
   document.getElementById("overlay").style.display = "block";
   var img = document.getElementById("image_overlay");
   img.src="../images/" + chemin;
-  img_overlay_rotate = 0;
+  img_overlay_rotate = -parseInt(rotate);
   img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
 }
 

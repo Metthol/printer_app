@@ -367,31 +367,33 @@ function display_thumbnails(full_preview)
 function on(pict_id, chemin, rotate) {
   preview = true;
   document.getElementById("overlay").style.display = "block";
-  var img = document.getElementById("image_overlay");
-  img.src="../images/" + chemin;
-  img_overlay_rotate = -parseInt(rotate);
-  img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
+  setOverlayPict(chemin, rotate);
   overlayPictId = pict_id;
 }
 
 function overlayLeft()
 {
-  var img = document.getElementById("image_overlay");
-  img.src="../images/" + chemin;
   if(overlayPictId > 0){
     overlayPictId -= 1;
-    img.src = "../images/" + allImgsData[overlayPictId].url;
+    setOverlayPict(allImgsData[overlayPictId].url, allImgsData[overlayPictId].rotate);
   }
 }
 
 function overlayRight()
 {
-  var img = document.getElementById("image_overlay");
-  img.src="../images/" + chemin;
   if((overlayPictId + 1) < allImgsData.length){
     overlayPictId += 1;
-    img.src = "../images/" + allImgsData[overlayPictId].url;
+    // img.src = "../images/" + allImgsData[overlayPictId].url;
+    setOverlayPict(allImgsData[overlayPictId].url, allImgsData[overlayPictId].rotate);
   }
+}
+
+function setOverlayPict(url, rot)
+{
+  var img = document.getElementById("image_overlay");
+  img.src="../images/" + url;
+  img_overlay_rotate = -parseInt(rot);
+  img.style.transform = 'rotate(' + img_overlay_rotate + 'deg)';
 }
 
 function off() {
